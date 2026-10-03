@@ -1,0 +1,12 @@
+[
+ {"topic":"How Apollo 13 Survived","query":"Apollo 13","angle":"The engineering improvisation that brought the crew home"},
+ {"topic":"The Story of the Hubble Repair Mission","query":"Hubble Space Telescope servicing mission 1","angle":"How astronauts fixed the flawed mirror"},
+ {"topic":"Why the Space Shuttle Challenger Disaster Happened","query":"Space Shuttle Challenger disaster","angle":"The engineering and decision-making failures, told respectfully"},
+ {"topic":"The First American in Orbit: John Glenn","query":"John Glenn Friendship 7","angle":"What Friendship 7 actually went through"},
+ {"topic":"How the Voyager Golden Record Was Made","query":"Voyager Golden Record","angle":"What was chosen and why"},
+ {"topic":"How a Remote New Mexico School Became a Secret City","query":"Los Alamos Laboratory Manhattan Project","angle":"Los Alamos during the Manhattan Project"},
+ {"topic":"How Katherine Johnson Helped Launch America Into Orbit","query":"Katherine Johnson","angle":"The math behind early NASA flights"},
+ {"topic":"The Apollo 1 Fire and What Changed After","query":"Apollo 1","angle":"Lessons that reshaped spacecraft design"},
+ {"topic":"The Mars Pathfinder Landing","query":"Mars Pathfinder","angle":"Airbags, a rover, and a new way to explore"},
+ {"topic":"How Skylab Fell to Earth","query":"Skylab","angle":"America's first space station and its dramatic end"}
+]
