@@ -1,0 +1,22 @@
+name: Test content
+on: workflow_dispatch
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python -m scripts.run_content
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CONTACT_EMAIL: pawarakshay9658@gmail.com
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: output
+          path: |
+            output
+            logs
