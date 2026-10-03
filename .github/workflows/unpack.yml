@@ -8,9 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          unzip -o .github/workflows/youtube-automation-phase2.zip
+          ls -R . | head -50
+          ZIP=$(find . -name "youtube-automation*.zip" -not -path "./.git/*" | head -1)
+          echo "Found zip: $ZIP"
+          unzip -o "$ZIP"
           cp -r youtube-automation/. .
-          rm -rf youtube-automation .github/workflows/youtube-automation-phase2.zip
+          rm -rf youtube-automation "$ZIP"
       - run: |
           git config user.name "bot"
           git config user.email "bot@users.noreply.github.com"
