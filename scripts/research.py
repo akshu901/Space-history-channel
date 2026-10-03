@@ -1,19 +1,32 @@
 """Free research: Wikipedia (CC BY-SA) + NASA Image and Video Library (mostly public domain)."""
 import requests
+from urllib.parse import quote
 from config.settings import USER_AGENT
 
 HEADERS = {"User-Agent": USER_AGENT}
 
-def wikipedia(query: str, max_chars: int = 9000):
-    r = requests.get("https://en.wikipedia.org/w/api.php", headers=HEADERS, timeout=30, params={
-        "action": "query", "format": "json", "generator": "search", "gsrsearch": query,
-        "gsrlimit": 2, "prop": "extracts|info", "explaintext": 1, "exlimit": 2, "inprop": "url"})
-    r.raise_for_status()
-    pages = (r.json().get("query") or {}).get("pages", {})
+def wikipedia(query: str, max_chars: int = 60000, pages: int = 2):
+    """Find the top matching articles, then fetch each FULL article text separately."""
+    api = "https://en.wikipedia.org/w/api.php"
+    s = requests.get(api, headers=HEADERS, timeout=30, params={
+        "action": "query", "format": "json", "list": "search",
+        "srsearch": query, "srlimit": pages})
+    s.raise_for_status()
     out = []
-    for p in sorted(pages.values(), key=lambda x: x.get("index", 99)):
-        out.append({"title": p["title"], "url": p["fullurl"], "license": "CC BY-SA 4.0 (Wikipedia)",
-                    "text": (p.get("extract") or "")[:max_chars]})
+    for hit in s.json()["query"]["search"]:
+        title = hit["title"]
+        r = requests.get(api, headers=HEADERS, timeout=30, params={
+            "action": "query", "format": "json", "prop": "extracts",
+            "explaintext": 1, "titles": title, "redirects": 1})
+        r.raise_for_status()
+        page = next(iter(r.json()["query"]["pages"].values()))
+        text = page.get("extract") or ""
+        if len(text) < 500:
+            continue
+        out.append({"title": title,
+                    "url": "https://en.wikipedia.org/wiki/" + quote(title.replace(" ", "_")),
+                    "license": "CC BY-SA 4.0 (Wikipedia)",
+                    "text": text[:max_chars]})
     return out
 
 def nasa_images(query: str, limit: int = 8):
