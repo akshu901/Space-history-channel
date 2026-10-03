@@ -8,9 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          unzip -o youtube-automation-phase2.zip
+          unzip -o .github/workflows/youtube-automation-phase2.zip
           cp -r youtube-automation/. .
-          rm -rf youtube-automation youtube-automation-phase2.zip
+          rm -rf youtube-automation .github/workflows/youtube-automation-phase2.zip
       - run: |
           git config user.name "bot"
           git config user.email "bot@users.noreply.github.com"
