@@ -17,6 +17,12 @@ def _models():
     first = os.getenv("GEMINI_MODEL")
     return ([first] if first else []) + [m for m in FALLBACK_MODELS if m != first]
 
+def _unwrap(obj):
+    """Some models wrap the JSON object in a one-item list: [ {...} ]. Unwrap it."""
+    while isinstance(obj, list) and len(obj) == 1:
+        obj = obj[0]
+    return obj
+
 def generate_json(prompt: str, retries: int = 4):
     if not settings.GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY not set")
@@ -36,7 +42,7 @@ def generate_json(prompt: str, retries: int = 4):
                 r.raise_for_status()
                 text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
                 log.info("Used model %s", model)
-                return json.loads(text)
+                return _unwrap(json.loads(text))
             except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
                 if i == retries - 1:
                     errors.append(f"{model}: {e}")
