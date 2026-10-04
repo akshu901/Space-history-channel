@@ -25,16 +25,19 @@ def run():
         (out / "research.json").write_text(json.dumps(data, indent=2))
         feedback, script, check = "", None, None
         for attempt in range(1, settings.MAX_SCRIPT_ATTEMPTS + 1):
-            script = write_script(t["topic"], t["angle"], data["sources"], feedback)
+            script = write_script(t["topic"], t["angle"], data["sources"], feedback, script)
             wc = word_count(script)
             check = fact_check(script, data["sources"])
             log.info("Attempt %d: %d words, verdict=%s", attempt, wc, check["verdict"])
             if check["verdict"] == "pass" and 700 <= wc <= 1300:
                 break
+                        problems = []
             unsupported = check.get("unsupported", [])
-            feedback = (
-                "Remove or fix these unsupported claims: "
-                + "; ".join(unsupported)
+            if unsupported:
+                problems.append("Unsupported claims: " + "; ".join(unsupported))
+            if not 700 <= wc <= 1300:
+                problems.append(f"Length is {wc} words but must be 700 to 1300.")
+            feedback = "\n".join(problems) or "Fact-check failed. Remove anything not in the sources."
                 + ". Use only facts stated in the sources. "
                 + "Do not add numbers, materials, colors or causes not in the sources."
             )
