@@ -33,14 +33,18 @@ def run():
                 break
             unsupported = check.get("unsupported", [])
 
-feedback = (
-    "Rewrite the script. Remove or fix these unsupported claims: "
-    f"{unsupported}. "
-    "Use only facts stated in the source. "
-    "Do not add specifics (numbers, materials, colors, causes) "
-    "that aren't in the source text. "
-    f"Word count was {wc}; target {settings.TARGET_WORDS}."
-)
+feedback = ""
+for attempt in range(1, 4):
+    script = write_script(topic, feedback)
+    check = fact_check(script)
+    if check["verdict"] == "pass":
+        break
+    feedback = (
+        "Remove or fix these unsupported claims: "
+        + "; ".join(check["unsupported"])
+    )
+else:
+    raise RuntimeError(f"Script failed fact-check: {check}")
         else:
             raise RuntimeError(f"Script failed fact-check/length: {check}")
         script["fact_check"] = check
