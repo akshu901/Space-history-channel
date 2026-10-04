@@ -17,13 +17,13 @@ def run():
     vid = db.reserve_topic(conn, t["topic"])
     out = settings.OUTPUT_DIR / f"{date.today()}_{db.slugify(t['topic'])}"
     out.mkdir(parents=True, exist_ok=True)
-    try:
+      try:
         log.info("Topic: %s", t["topic"])
         data = research.gather(t["query"])
         if not data["sources"] or sum(len(s["text"]) for s in data["sources"]) < 1500:
             raise RuntimeError("Not enough source material")
         (out / "research.json").write_text(json.dumps(data, indent=2))
-       feedback, script, check = "", None, None
+        feedback, script, check = "", None, None
         for attempt in range(1, settings.MAX_SCRIPT_ATTEMPTS + 1):
             script = write_script(t["topic"], t["angle"], data["sources"], feedback)
             wc = word_count(script)
@@ -40,29 +40,6 @@ def run():
             )
         else:
             raise RuntimeError(f"Script failed fact-check/length: {check}")
-        for attempt in range(1, settings.MAX_SCRIPT_ATTEMPTS + 1):
-            script = write_script(t["topic"], t["angle"], data["sources"], feedback)
-            wc = word_count(script)
-            check = fact_check(script, data["sources"])
-            log.info("Attempt %d: %d words, verdict=%s", attempt, wc, check["verdict"])
-            if check["verdict"] == "pass" and 700 <= wc <= 1300:
-                break
-            unsupported = check.get("unsupported", [])
-
-feedback = ""
-for attempt in range(1, 4):
-    script = write_script(topic, feedback)
-    check = fact_check(script)
-    if check["verdict"] == "pass":
-        break
-    feedback = (
-        "Remove or fix these unsupported claims: "
-        + "; ".join(check["unsupported"])
-    )
-else:
-    raise RuntimeError(f"Script failed fact-check: {check}")
-        else:
-            raise RuntimeError(f"Script failed fact-check/length: {check}")
         script["fact_check"] = check
         (out / "script.json").write_text(json.dumps(script, indent=2))
         db.update(conn, vid, script=json.dumps(script),
@@ -71,7 +48,8 @@ else:
     except Exception as e:
         db.update(conn, vid, error=str(e), upload_status="failed")
         log.exception("Content step failed")
-        sys.exit(1)  # non-zero exit = GitHub Actions marks run failed = you get an email
+        sys.exit(1)  # non-zero exit = GitHub Actions marks run failed = you get an email  
+  # non-zero exit = GitHub Actions marks run failed = you get an email
 
 if __name__ == "__main__":
     run()
