@@ -1,0 +1,37 @@
+"""Phase 3a: script.json -> per-section mp3 -> voice.mp3 + timeline.json"""
+import asyncio, json, subprocess, logging
+import edge_tts
+from config import settings
+
+log = logging.getLogger("voiceover")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+VOICE = "en-US-GuyNeural"   # other options: en-US-AriaNeural, en-GB-RyanNeural
+RATE = "-5%"                # slightly slower = clearer for history content
+
+
+def latest_dir():
+    dirs = [d for d in settings.OUTPUT_DIR.iterdir() if (d / "script.json").exists()]
+    if not dirs:
+        raise RuntimeError("No script.json found in output/")
+    return max(dirs, key=lambda d: d.stat().st_mtime)
+
+
+def duration(path):
+    r = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+         "-of", "default=nw=1:nk=1", str(path)],
+        capture_output=True, text=True, check=True)
+    return round(float(r.stdout.strip()), 2)
+
+
+async def synth(text, path):
+    await edge_tts.Communicate(text, VOICE, rate=RATE).save(str(path))
+
+
+def run():
+    out = latest_dir()
+    log.info("Using %s", out)
+    script = json.loads((out / "script.json").read_text())
+    audio = out / "audio"
+    audio.mkdir(exist_ok=True)
