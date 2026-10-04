@@ -31,7 +31,16 @@ def run():
             log.info("Attempt %d: %d words, verdict=%s", attempt, wc, check["verdict"])
             if check["verdict"] == "pass" and 700 <= wc <= 1300:
                 break
-            feedback = "\n".join(check.get("unsupported", [])) + f"\nWord count was {wc}; target {settings.TARGET_WORDS}."
+            unsupported = check.get("unsupported", [])
+
+feedback = (
+    "Rewrite the script. Remove or fix these unsupported claims: "
+    f"{unsupported}. "
+    "Use only facts stated in the source. "
+    "Do not add specifics (numbers, materials, colors, causes) "
+    "that aren't in the source text. "
+    f"Word count was {wc}; target {settings.TARGET_WORDS}."
+)
         else:
             raise RuntimeError(f"Script failed fact-check/length: {check}")
         script["fact_check"] = check
