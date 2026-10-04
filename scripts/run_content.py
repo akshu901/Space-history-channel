@@ -23,7 +23,7 @@ def run():
         if not data["sources"] or sum(len(s["text"]) for s in data["sources"]) < 1500:
             raise RuntimeError("Not enough source material")
         (out / "research.json").write_text(json.dumps(data, indent=2))
-                feedback, script, check = "", None, None
+       feedback, script, check = "", None, None
         for attempt in range(1, settings.MAX_SCRIPT_ATTEMPTS + 1):
             script = write_script(t["topic"], t["angle"], data["sources"], feedback)
             wc = word_count(script)
