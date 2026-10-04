@@ -17,7 +17,7 @@ def run():
     vid = db.reserve_topic(conn, t["topic"])
     out = settings.OUTPUT_DIR / f"{date.today()}_{db.slugify(t['topic'])}"
     out.mkdir(parents=True, exist_ok=True)
-      try:
+    try:
         log.info("Topic: %s", t["topic"])
         data = research.gather(t["query"])
         if not data["sources"] or sum(len(s["text"]) for s in data["sources"]) < 1500:
@@ -48,8 +48,8 @@ def run():
     except Exception as e:
         db.update(conn, vid, error=str(e), upload_status="failed")
         log.exception("Content step failed")
-        sys.exit(1)  # non-zero exit = GitHub Actions marks run failed = you get an email  
-  # non-zero exit = GitHub Actions marks run failed = you get an email
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     run()
