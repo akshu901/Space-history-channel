@@ -9,7 +9,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
-      - run: python -m scripts.run_content
+      - run: python -m scripts.run_content2
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CONTACT_EMAIL: pawarakshay9658@gmail.com
