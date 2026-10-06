@@ -16,4 +16,4 @@ CONTACT = os.getenv("CONTACT_EMAIL", "set-your-email@example.com")
 USER_AGENT = f"SpaceHistoryBot/0.1 ({CONTACT})"
 
 TARGET_WORDS = 950  # about 6-7 min at ~150 wpm
-MAX_SCRIPT_ATTEMPTS = 3
+MAX_SCRIPT_ATTEMPTS = 5
