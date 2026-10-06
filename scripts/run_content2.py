@@ -3,7 +3,7 @@ import json, logging, sys
 from datetime import date
 from config import settings
 from scripts import db, topics, research
-from scripts.script_writer import write_script, word_count
+from scripts.script_writer2 import write_script, word_count
 from scripts.fact_check import fact_check
 
 settings.LOG_DIR.mkdir(exist_ok=True)
