@@ -35,3 +35,27 @@ def run():
     script = json.loads((out / "script.json").read_text())
     audio = out / "audio"
     audio.mkdir(exist_ok=True)
+        timeline, files, start = [], [], 0.0
+    for i, sec in enumerate(script["sections"]):
+        mp3 = audio / f"{i:02d}_{sec['name']}.mp3"
+        asyncio.run(synth(sec["narration"], mp3))
+        d = duration(mp3)
+        timeline.append({"name": sec["name"], "file": mp3.name, "start": round(start, 2),
+                         "duration": d, "visual_hint": sec["visual_hint"]})
+        files.append(mp3)
+        start += d
+        log.info("%s: %.1fs", sec["name"], d)
+
+    listfile = audio / "list.txt"
+    listfile.write_text("".join(f"file '{f.resolve()}'\n" for f in files))
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(listfile),
+                    "-c", "copy", str(out / "voice.mp3")], check=True, capture_output=True)
+
+    (out / "timeline.json").write_text(json.dumps(
+        {"total_seconds": round(start, 2), "sections": timeline}, indent=2))
+    log.info("Done. Total %.1fs -> %s", start, out / "voice.mp3")
+
+
+if __name__ == "__main__":
+    run()
+    
