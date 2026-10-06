@@ -37,7 +37,7 @@ It failed review. Problems:
 
 Revise the draft. Change ONLY what is needed to fix these problems:
 - Delete or rewrite every sentence containing an unsupported claim.
-- Keep all other text as it is. Do not shorten the script.
+- - Keep all other text as it is. Keep the total length about the same, under 1250 words.
 - If the length is the problem, expand with more facts that appear in the sources.
 Return the full revised JSON.
 """
