@@ -1,0 +1,37 @@
+name: Test video
+on: workflow_dispatch
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements.txt
+      - name: Get last good script
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ID=$(gh run list --workflow test_content.yml --status success --limit 1 --json databaseId -q '.[0].databaseId')
+          gh run download "$ID" -n output -D dl
+          mkdir -p output
+          find dl -name script.json | while read f; do cp -r "$(dirname "$f")" output/; done
+      - name: Voiceover
+        run: python -m scripts.voiceover2
+      - name: Visuals
+        run: python -m scripts.visuals2
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - name: Render video
+        run: python -m scripts.render
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: video
+          path: output
