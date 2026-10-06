@@ -33,7 +33,7 @@ def run():
             if check["verdict"] == "pass" and 700 <= wc <= 1300:
                 break
             problems = []
-            unsupported = check.get("unsupported", [])
+            unsupported = check.get("unsupported", []) + check.get("uncertain", [])
             if unsupported:
                 problems.append("Unsupported claims: " + "; ".join(unsupported))
             if not 700 <= wc <= 1300:
