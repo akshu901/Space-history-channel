@@ -56,6 +56,6 @@ def run():
     log.info("Done. Total %.1fs -> %s", start, out / "voice.mp3")
 
 
-if __name__ == "__main__":
+run() __name__ == "__main__":
     run()
     
