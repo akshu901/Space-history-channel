@@ -1,0 +1,36 @@
+name: Test visuals 2
+on: workflow_dispatch
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Get last good content run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ID=$(gh run list --workflow test_content.yml --status success --limit 1 --json databaseId -q '.[0].databaseId')
+          echo "Using run $ID"
+          gh run download "$ID" -n output -D dl
+          echo "--- downloaded files ---"
+          find dl | head -40
+          mkdir -p output
+          find dl -name timeline.json | while read f; do cp -r "$(dirname "$f")" output/; done
+          echo "--- output folder ---"
+          find output | head -40
+      - name: Visuals
+        run: python -m scripts.visuals
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visuals
+          path: output
